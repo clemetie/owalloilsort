@@ -8,7 +8,7 @@
 body {
   font-family: sans-serif;
   text-align: center;
-background-color: #53B0AE;
+  background-color: #90E0EF;
 }
 
 .container {
@@ -57,7 +57,7 @@ background-color: #53B0AE;
 
 button {
   margin-top: 10px;
-  padding: 8px 14px;
+  padding: 8px 18px;
   border: none;
   border-radius: 8px;
   background: #333;
@@ -72,10 +72,11 @@ button {
 #result {
   margin-top: 30px;
   padding: 20px;
-  background: #53B0AE;
+  background: #90E0EF;
   border-radius: 16px;
 }
 
+/* 테이블 스타일 */
 table {
   margin: 20px auto;
   border-collapse: collapse;
@@ -89,21 +90,15 @@ table {
 th {
   background: #222;
   color: #fff;
-  padding: 8px;
-  font-size: 14px;
+  padding: 6px;
 }
 
 td {
-  font-size: 14px;
+  padding: 6px;
 }
 
 tr:nth-child(even) {
   background: #f5f7f8;
-}
-
-tr:hover {
-  background: #e8f6f5;
-  transition: 0.2s;
 }
 </style>
 </head>
@@ -141,7 +136,6 @@ tr:hover {
   📸 결과 이미지 저장
 </button>
 
-<!-- html2canvas -->
 <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 
 <script>
@@ -214,7 +208,6 @@ function renderThumb(targetId, song) {
 }
 
 function showMatch() {
-
   if (currentRound >= totalRounds) return showResult();
 
   currentRound++;
@@ -232,16 +225,10 @@ function showMatch() {
       next = firstRoundQueue.pop();
     }
   } else {
-    const candidates = songs
-      .map((s, i) => ({ ...s, i }))
-      .filter(s => s.score > 0);
-
-    const pool = candidates.length >= 2 ? candidates : songs.map((s, i) => ({ ...s, i }));
-
-    let a = pool[Math.floor(Math.random() * pool.length)].i;
+    let a = Math.floor(Math.random() * songs.length);
     let b;
     do {
-      b = pool[Math.floor(Math.random() * pool.length)].i;
+      b = Math.floor(Math.random() * songs.length);
     } while (a === b);
 
     current = a;
@@ -286,49 +273,40 @@ function pick(choice) {
 
 function showResult() {
   const sorted = [...songs].sort((a, b) => {
-    const rA = a.match ? a.score / a.match : 0;
-    const rB = b.match ? b.score / b.match : 0;
-
-    if (rB !== rA) return rB - rA;
     if (b.score !== a.score) return b.score - a.score;
-    if (b.match !== a.match) return b.match - a.match;
-    return 0;
-
+    return b.match - a.match;
   });
-    document.getElementById("saveBtn").style.display = "inline-block";
+
+  document.getElementById("saveBtn").style.display = "inline-block";
+
   let html = `<h2>🏆 전체 순위</h2>
-  <table style="margin:20px auto; border-collapse:collapse; width:300px; background:white;">
-  <tr style="background:#333; color:white;">
+  <table>
+  <tr>
     <th>순위</th><th>곡 제목</th><th>선택</th>
   </tr>`;
 
   let rank = 1;
 
   sorted.forEach((s, i) => {
-    if (i > 0) {
-      const p = sorted[i - 1];
-      const same =
-        (s.score / s.match === p.score / p.match) &&
-        s.score === p.score &&
-        s.match === p.match;
-
-      if (!same) rank = i + 1;
+    if (i > 0 && s.score !== sorted[i - 1].score) {
+      rank = i + 1;
     }
 
     html += `<tr style="${rank === 1 ? 'background:#ffe066; font-weight:bold;' : ''}">
-  <td>${rank}</td>
-  <td>${rank === 1 ? "👑 " : ""}${s.title}</td>
-  <td>${s.score}</td>
-</tr>`;
+      <td>${rank}</td>
+      <td>${rank === 1 ? "👑 " : ""}${s.title}</td>
+      <td>${s.score}</td>
+    </tr>`;
   });
 
   html += `</table>`;
   document.getElementById("result").innerHTML = html;
 }
 
-// 📸 이미지 저장
 function saveImage() {
-  html2canvas(document.getElementById("capture")).then(canvas => {
+  html2canvas(document.getElementById("capture"), {
+    backgroundColor: "#ffffff"
+  }).then(canvas => {
     const link = document.createElement("a");
     link.download = "오월오일 노래 소트.png";
     link.href = canvas.toDataURL();
