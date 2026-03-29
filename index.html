@@ -282,7 +282,7 @@ function showResult() {
   let html = `<h2>🏆 전체 순위</h2>
   <table>
   <tr>
-    <th>순위</th><th>곡 제목</th><th>선택</th>
+    <th>순위</th><th>곡 제목</th>
   </tr>`;
 
   let rank = 1;
@@ -295,7 +295,6 @@ function showResult() {
     html += `<tr style="${rank === 1 ? 'background:#ffe066; font-weight:bold;' : ''}">
       <td>${rank}</td>
       <td>${rank === 1 ? "👑 " : ""}${s.title}</td>
-      <td>${s.score}</td>
     </tr>`;
   });
 
