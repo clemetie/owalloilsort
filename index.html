@@ -276,16 +276,14 @@ function showResult() {
   });
 
   let html = `
-    <h2>🏆 전체 순위</h2>
-    <table style="margin:20px auto; border-collapse:collapse; width:400px; background:white;">
-      <tr style="background:#333; color:white;">
-        <th>순위</th>
-        <th>곡 제목</th>
-        <th>선택</th>
-        <th>등장</th>
-        <th>승률</th>
-      </tr>
-  `;
+  <h2>🏆 전체 순위</h2>
+  <table style="margin:20px auto; border-collapse:collapse; width:300px; background:white;">
+    <tr style="background:#333; color:white;">
+      <th>순위</th>
+      <th>곡 제목</th>
+      <th>선택</th>
+    </tr>
+`;
 
   let rank = 1;
 
@@ -306,14 +304,12 @@ function showResult() {
       : 0;
 
     html += `
-      <tr>
-        <td>${rank}</td>
-        <td>${rank === 1 ? "👑 " : ""}${song.title}</td>
-        <td>${song.score}</td>
-        <td>${song.match}</td>
-        <td>${rate}%</td>
-      </tr>
-    `;
+  <tr>
+    <td>${rank}</td>
+    <td>${rank === 1 ? "👑 " : ""}${song.title}</td>
+    <td>${song.score}</td>
+  </tr>
+`;
   });
 
   html += `</table>`;
