@@ -5,14 +5,14 @@
 <title>오월오일 노래 소트</title>
 
 <style>
-
-  body {
+body {
   font-family: sans-serif;
   text-align: center;
-
-    background: #D3E6F8;
+  background-image: url("33B02DC7-231F-4C3E-B247-070C77860094.jpeg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
-
 
 .container {
   display: flex;
@@ -75,18 +75,12 @@ button {
 #result {
   margin-top: 30px;
 }
-
-h3 {
-  font-weight: 300;
-}
 </style>
 </head>
 
 <body>
 
 <h1>오월오일 노래 소트</h1>
-<h3>2026.03.29 @withardor</h3>
-
 <div id="round"></div>
 
 <div class="container">
@@ -108,11 +102,17 @@ h3 {
   <button onclick="pick(2)">🤷 모르겠다</button>
 </div>
 
-<div id="result"></div>
+<div id="capture">
+  <div id="result"></div>
+</div>
+
+<button onclick="saveImage()">📸 결과 이미지 저장</button>
+
+<!-- html2canvas -->
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 
 <script>
 
-// 🎵 곡 리스트
 const songs = [
   { title: "손", id: "fWgZLZmM6Jg", score: 0, match: 0 },
   { title: "Rooftop", id: "RP3DgYjdvAo", score: 0, match: 0 },
@@ -161,7 +161,6 @@ const songs = [
   { title: "As all", id: "nWwwQ2EI8GY", score: 0, match: 0 },
   { title: "Run", id: "L71TzVM_Xog", score: 0, match: 0 },
   { title: "이 도시는", id: "MKIDOE7BxUE", score: 0, match: 0 },
-  { title: "봉숭아 (Acoustic ver.)", id: "ZCIDsK94WZM", score: 0, match: 0 },
 ];
 
 let totalRounds = songs.length + 30;
@@ -177,41 +176,37 @@ function getThumb(id) {
 }
 
 function renderThumb(targetId, song) {
-  document.getElementById(targetId).innerHTML = `
-    <img src="${getThumb(song.id)}">
-    <div class="play">▶</div>
-  `;
+  document.getElementById(targetId).innerHTML =
+    `<img src="${getThumb(song.id)}"><div class="play">▶</div>`;
 }
 
 function showMatch() {
-  if (currentRound >= totalRounds) {
-    showResult();
-    return;
-  }
+
+  if (currentRound >= totalRounds) return showResult();
 
   currentRound++;
 
   if (!firstRoundDone) {
-    if (firstRoundQueue.length < 2) {
+    if (firstRoundQueue.length === 1) {
+      current = firstRoundQueue.pop();
+      next = Math.floor(Math.random() * songs.length);
+      firstRoundDone = true;
+    } else if (firstRoundQueue.length === 0) {
       firstRoundDone = true;
       return showMatch();
+    } else {
+      current = firstRoundQueue.pop();
+      next = firstRoundQueue.pop();
     }
-
-    current = firstRoundQueue.pop();
-    next = firstRoundQueue.pop();
-
   } else {
     const candidates = songs
       .map((s, i) => ({ ...s, i }))
       .filter(s => s.score > 0);
 
-    const pool = candidates.length >= 2
-      ? candidates
-      : songs.map((s, i) => ({ ...s, i }));
+    const pool = candidates.length >= 2 ? candidates : songs.map((s, i) => ({ ...s, i }));
 
     let a = pool[Math.floor(Math.random() * pool.length)].i;
     let b;
-
     do {
       b = pool[Math.floor(Math.random() * pool.length)].i;
     } while (a === b);
@@ -223,10 +218,8 @@ function showMatch() {
   songs[current].match++;
   songs[next].match++;
 
-  let remain = totalRounds - currentRound;
-
   document.getElementById("round").innerText =
-    `🔥 ${remain}번 남음`;
+    `🔥 ${totalRounds - currentRound}번 남음`;
 
   renderThumb("leftPlayer", songs[current]);
   renderThumb("rightPlayer", songs[next]);
@@ -239,86 +232,78 @@ function playVideo(side) {
   const song = side === 0 ? songs[current] : songs[next];
   const target = side === 0 ? "leftPlayer" : "rightPlayer";
 
-  document.getElementById(target).innerHTML = `
-    <iframe width="100%" height="160"
+  document.getElementById(target).innerHTML =
+    `<iframe width="100%" height="160"
       src="https://www.youtube.com/embed/${song.id}?autoplay=1"
-      allow="autoplay"
-      allowfullscreen></iframe>
-  `;
+      allow="autoplay" allowfullscreen></iframe>`;
 }
 
 function pick(choice) {
-  if (choice === 0) {
-    songs[current].score++;
-  } else if (choice === 1) {
-    songs[next].score++;
-  } else if (choice === 2) {
+  if (choice === 0) songs[current].score++;
+  else if (choice === 1) songs[next].score++;
+  else if (choice === 2) {
     const win = Math.random() > 0.5 ? current : next;
     songs[win].score++;
-  } else if (choice === 3) {
+  } else {
     songs[current].score++;
     songs[next].score++;
   }
-
   showMatch();
 }
 
 function showResult() {
   const sorted = [...songs].sort((a, b) => {
-    const rateA = a.match ? a.score / a.match : 0;
-    const rateB = b.match ? b.score / b.match : 0;
+    const rA = a.match ? a.score / a.match : 0;
+    const rB = b.match ? b.score / b.match : 0;
 
-    if (rateB !== rateA) return rateB - rateA;
+    if (rB !== rA) return rB - rA;
     if (b.score !== a.score) return b.score - a.score;
     if (b.match !== a.match) return b.match - a.match;
-
     return 0;
   });
 
-  let html = `
-  <h2>🏆 전체 순위</h2>
+  let html = `<h2>🏆 전체 순위</h2>
   <table style="margin:20px auto; border-collapse:collapse; width:300px; background:white;">
-    <tr style="background:#333; color:white;">
-      <th>순위</th>
-      <th>곡 제목</th>
-      <th>선택</th>
-    </tr>
-`;
+  <tr style="background:#333; color:white;">
+    <th>순위</th><th>곡 제목</th><th>선택</th>
+  </tr>`;
 
   let rank = 1;
 
-  sorted.forEach((song, i) => {
+  sorted.forEach((s, i) => {
     if (i > 0) {
-      const prev = sorted[i - 1];
-
+      const p = sorted[i - 1];
       const same =
-        (song.score / song.match === prev.score / prev.match) &&
-        song.score === prev.score &&
-        song.match === prev.match;
+        (s.score / s.match === p.score / p.match) &&
+        s.score === p.score &&
+        s.match === p.match;
 
       if (!same) rank = i + 1;
     }
 
-    const rate = song.match
-      ? ((song.score / song.match) * 100).toFixed(1)
-      : 0;
-
-    html += `
-  <tr>
-    <td>${rank}</td>
-    <td>${rank === 1 ? "👑 " : ""}${song.title}</td>
-    <td>${song.score}</td>
-  </tr>
-`;
+    html += `<tr>
+      <td>${rank}</td>
+      <td>${rank === 1 ? "👑 " : ""}${s.title}</td>
+      <td>${s.score}</td>
+    </tr>`;
   });
 
   html += `</table>`;
   document.getElementById("result").innerHTML = html;
 }
 
+// 📸 이미지 저장
+function saveImage() {
+  html2canvas(document.getElementById("capture")).then(canvas => {
+    const link = document.createElement("a");
+    link.download = "오월오일 노래 소트.png";
+    link.href = canvas.toDataURL();
+    link.click();
+  });
+}
+
 showMatch();
 
 </script>
-
 </body>
 </html>
