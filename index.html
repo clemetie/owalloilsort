@@ -255,7 +255,12 @@ function pick(choice) {
     songs[win].score++;
   } else if (choice === 3) {
     // 💖 둘 다 좋다
-    songs[current]}};
+    songs[current].score++;
+    songs[next].score++;
+  }
+
+  showMatch();
+}
     
 function showResult() {
   const sorted = [...songs].sort((a, b) => {
