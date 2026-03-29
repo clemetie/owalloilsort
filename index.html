@@ -71,6 +71,40 @@ button {
 
 #result {
   margin-top: 30px;
+  padding: 20px;
+  background: #53B0AE;
+  border-radius: 16px;
+}
+
+table {
+  margin: 20px auto;
+  border-collapse: collapse;
+  width: 320px;
+  background: #ffffff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+}
+
+th {
+  background: #222;
+  color: #fff;
+  padding: 10px;
+  font-size: 14px;
+}
+
+td {
+  padding: 10px;
+  font-size: 14px;
+}
+
+tr:nth-child(even) {
+  background: #f5f7f8;
+}
+
+tr:hover {
+  background: #e8f6f5;
+  transition: 0.2s;
 }
 </style>
 </head>
@@ -282,11 +316,11 @@ function showResult() {
       if (!same) rank = i + 1;
     }
 
-    html += `<tr>
-      <td>${rank}</td>
-      <td>${rank === 1 ? "👑 " : ""}${s.title}</td>
-      <td>${s.score}</td>
-    </tr>`;
+    html += `<tr style="${rank === 1 ? 'background:#ffe066; font-weight:bold;' : ''}">
+  <td>${rank}</td>
+  <td>${rank === 1 ? "👑 " : ""}${s.title}</td>
+  <td>${s.score}</td>
+</tr>`;
   });
 
   html += `</table>`;
