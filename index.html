@@ -1,10 +1,10 @@
+<!DOCTYPE html>
 <html>
- <head>  
- </head> 
- <body> 
-  <meta charset="UTF-8"> 
-  <title>오월오일 노래 월드컵</title> 
-  <style>
+<head>
+<meta charset="UTF-8">
+<title>오월오일 노래 월드컵</title>
+
+<style>
 body {
   font-family: sans-serif;
   text-align: center;
@@ -68,81 +68,101 @@ button {
 #result {
   margin-top: 30px;
 }
-h3{
-font-weight: 300;}
-</style> 
-  <h1>오월오일 노래 월드컵</h1> 
-  <h3>2026.03.29 @withardor</h3> 
-  <h3> 
-   <div id="round"></div> 
-   <div class="container"> 
-    <div class="card"> 
-     <div class="player" id="leftPlayer" onclick="playVideo(0)"></div> 
-     <div class="title" id="leftTitle"></div> 
-     <button onclick="pick(0)">선택</button> 
-    </div> 
-    <div class="card"> 
-     <div class="player" id="rightPlayer" onclick="playVideo(1)"></div> 
-     <div class="title" id="rightTitle"></div> 
-     <button onclick="pick(1)">선택</button> 
-    </div> 
-   </div> <button onclick="pick(2)">🤷 모르겠다</button> 
-   <div id="result"></div> <script>
+
+h3 {
+  font-weight: 300;
+}
+</style>
+</head>
+
+<body>
+
+<h1>오월오일 노래 월드컵</h1>
+<h3>2026.03.29 @withardor</h3>
+
+<div id="round"></div>
+
+<div class="container">
+  <div class="card">
+    <div class="player" id="leftPlayer" onclick="playVideo(0)"></div>
+    <div class="title" id="leftTitle"></div>
+    <button onclick="pick(0)">선택</button>
+  </div>
+
+  <div class="card">
+    <div class="player" id="rightPlayer" onclick="playVideo(1)"></div>
+    <div class="title" id="rightTitle"></div>
+    <button onclick="pick(1)">선택</button>
+  </div>
+</div>
+
+<button onclick="pick(3)" style="margin-top:50px; margin-right: 40px;">💖 둘 다 좋다</button>
+<button onclick="pick(2)">🤷 모르겠다</button>
+
+<div id="result"></div>
+
+<script>
+
+// 🎵 곡 리스트
 const songs = [
-  { title: "손", id: "fWgZLZmM6Jg" },
-  { title: "Rooftop", id: "RP3DgYjdvAo" },
-  { title: "leaves", id: "N9HlPFynvPY" },
-  { title: "Harvest Day", id: "lbzaSpGVzzE" },
-  { title: "Look my moon", id: "6baXyNcL2xg" },
-  { title: "Cherry roman candle", id: "yYFkhUiwk4k" },
-  { title: "I dare you", id: "Kh7lsMEj3vk" },
-  { title: "Warrior", id: "F5BQldYHFLQ" },
-  { title: "London time", id: "Sx_8sO8Tm_M" },
-  { title: "Creaminal", id: "jd5SQvyHPLU" },
-  { title: "Scentria forest", id: "Umf0HCXFZY8" },
-  { title: "Tree", id: "eT54rGmRvLQ" },
-  { title: "She said", id: "SNH4lJiOUrw" },
-  { title: "봉숭아", id: "3E_ZWX8M2Gs" },
-  { title: "SSY", id: "2UDTlxQJ498" },
-  { title: "Magic train", id: "P9YUwP-eqmk" },
-  { title: "노란세상", id: "HxxBU0AtrHs" },
-  { title: "Young adult", id: "BcG_lkNmKBg" },
-  { title: "Echo", id: "zBfQC_GcIvM" },
-  { title: "Wish", id: "t54PzeNJDIA" },
-  { title: "샴수사바", id: "FUbFlQczycM" },
-  { title: "Lunch time", id: "iWtPhKNOgcU" },
-  { title: "Last dance", id: "Yyg6um1GIRE" },
-  { title: "Vivid nightmare", id: "Ti2CKdnGCNs" },
-    { title: "나를 싫어했던 사람들에게", id: "-cMIXDH4NOA" },
-  { title: "Merry go round", id: "0dc3mnBAZEY" },
-  { title: "잠자리,풀,옆", id: "oveiQ6wKryQ" },
-  { title: "유전", id: "ogbayM7pyzs" },
-  { title: "Before summer night", id: "hCUWt05urio" },
-  { title: "청춘", id: "UxiA_QlV4Es" },
-  { title: "구기동과 반딧불이", id: "Bw56tiQJyuk" },
-  { title: "We don't stop now", id: "ZQ6SVj9sAFI" },
-  { title: "Epilogue", id: "ASWYLoCJw4g" },
-  { title: "In the forest", id: "sk-vpbJ8AuI" },
-  { title: "바라보는걸", id: "SkHlUo6iLaw" },
-  { title: "Lonesome", id: "hpJXpGx2QgQ" },
-  { title: "이에르", id: "rsNZvUmIvc0" },
-  { title: "유월의 낮", id: "KxsZev7ErZo" },
-  { title: "별 빛이 내린다", id: "W8jeAJXMBJw" },
-  { title: "여름밤의 꿈", id: "ck1Tl27VRfE" },
-  { title: "spirit", id: "htMmco-iFtc" },
-  { title: "Sak", id: "1Il4wEMYWAM" },
-  { title: "I Met My Friend In The Water", id: "FmnKrdygkKM" },
-  { title: "우리 마주한 이 자리가", id: "3X9--5_0JBs" },
-  { title: "As all", id: "nWwwQ2EI8GY" },
-  { title: "Run", id: "L71TzVM_Xog" },
-    { title: "이 도시는", id: "MKIDOE7BxUE" },
+  { title: "손", id: "fWgZLZmM6Jg", score: 0, match: 0 },
+  { title: "Rooftop", id: "RP3DgYjdvAo", score: 0, match: 0 },
+  { title: "leaves", id: "N9HlPFynvPY", score: 0, match: 0 },
+  { title: "Harvest Day", id: "lbzaSpGVzzE", score: 0, match: 0 },
+  { title: "Look my moon", id: "6baXyNcL2xg", score: 0, match: 0 },
+  { title: "Cherry roman candle", id: "yYFkhUiwk4k", score: 0, match: 0 },
+  { title: "I dare you", id: "Kh7lsMEj3vk", score: 0, match: 0 },
+  { title: "Warrior", id: "F5BQldYHFLQ", score: 0, match: 0 },
+  { title: "London time", id: "Sx_8sO8Tm_M", score: 0, match: 0 },
+  { title: "Creaminal", id: "jd5SQvyHPLU", score: 0, match: 0 },
+  { title: "Scentria forest", id: "Umf0HCXFZY8", score: 0, match: 0 },
+  { title: "Tree", id: "eT54rGmRvLQ", score: 0, match: 0 },
+  { title: "She said", id: "SNH4lJiOUrw", score: 0, match: 0 },
+  { title: "봉숭아", id: "3E_ZWX8M2Gs", score: 0, match: 0 },
+  { title: "SSY", id: "2UDTlxQJ498", score: 0, match: 0 },
+  { title: "Magic train", id: "P9YUwP-eqmk", score: 0, match: 0 },
+  { title: "노란세상", id: "HxxBU0AtrHs", score: 0, match: 0 },
+  { title: "Young adult", id: "BcG_lkNmKBg", score: 0, match: 0 },
+  { title: "Echo", id: "zBfQC_GcIvM", score: 0, match: 0 },
+  { title: "Wish", id: "t54PzeNJDIA", score: 0, match: 0 },
+  { title: "샴수사바", id: "FUbFlQczycM", score: 0, match: 0 },
+  { title: "Lunch time", id: "iWtPhKNOgcU", score: 0, match: 0 },
+  { title: "Last dance", id: "Yyg6um1GIRE", score: 0, match: 0 },
+  { title: "Vivid nightmare", id: "Ti2CKdnGCNs", score: 0, match: 0 },
+  { title: "나를 싫어했던 사람들에게", id: "-cMIXDH4NOA", score: 0, match: 0 },
+  { title: "Merry go round", id: "0dc3mnBAZEY", score: 0, match: 0 },
+  { title: "잠자리,풀,옆", id: "oveiQ6wKryQ", score: 0, match: 0 },
+  { title: "유전", id: "ogbayM7pyzs", score: 0, match: 0 },
+  { title: "Before summer night", id: "hCUWt05urio", score: 0, match: 0 },
+  { title: "청춘", id: "UxiA_QlV4Es", score: 0, match: 0 },
+  { title: "구기동과 반딧불이", id: "Bw56tiQJyuk", score: 0, match: 0 },
+  { title: "We don't stop now", id: "ZQ6SVj9sAFI", score: 0, match: 0 },
+  { title: "Epilogue", id: "ASWYLoCJw4g", score: 0, match: 0 },
+  { title: "In the forest", id: "sk-vpbJ8AuI", score: 0, match: 0 },
+  { title: "바라보는걸", id: "SkHlUo6iLaw", score: 0, match: 0 },
+  { title: "Lonesome", id: "hpJXpGx2QgQ", score: 0, match: 0 },
+  { title: "이에르", id: "rsNZvUmIvc0", score: 0, match: 0 },
+  { title: "유월의 낮", id: "KxsZev7ErZo", score: 0, match: 0 },
+  { title: "별 빛이 내린다", id: "W8jeAJXMBJw", score: 0, match: 0 },
+  { title: "여름밤의 꿈", id: "ck1Tl27VRfE", score: 0, match: 0 },
+  { title: "spirit", id: "htMmco-iFtc", score: 0, match: 0 },
+  { title: "Sak", id: "1Il4wEMYWAM", score: 0, match: 0 },
+  { title: "I Met My Friend In The Water", id: "FmnKrdygkKM", score: 0, match: 0 },
+  { title: "우리 마주한 이 자리가", id: "3X9--5_0JBs", score: 0, match: 0 },
+  { title: "As all", id: "nWwwQ2EI8GY", score: 0, match: 0 },
+  { title: "Run", id: "L71TzVM_Xog", score: 0, match: 0 },
+  { title: "이 도시는", id: "MKIDOE7BxUE", score: 0, match: 0 },
 ];
 
-let shuffled = [...songs].sort(() => Math.random() - 0.5);
-let current = 0;
-let next = 1;
-let winners = [];
-let ranking = [];
+// ✅ 전체 라운드 설정
+let totalRounds = songs.length + 30;
+let currentRound = 0;
+
+let current, next;
+
+// ✅ 1단계 큐
+let firstRoundQueue = [...songs.keys()].sort(() => Math.random() - 0.5);
+let firstRoundDone = false;
 
 function getThumb(id) {
   return `https://img.youtube.com/vi/${id}/hqdefault.jpg`;
@@ -156,62 +176,63 @@ function renderThumb(targetId, song) {
 }
 
 function showMatch() {
-  if (next >= shuffled.length) {
-    if (winners.length === 1) {
-      ranking.unshift(winners[0]);
 
-      let html = `
-        <h2>🏆 전체 순위</h2>
-        <table style="
-          margin: 20px auto;
-          border-collapse: collapse;
-          width: 300px;
-          background: white;
-          box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        ">
-          <tr style="background:#333; color:white;">
-            <th style="padding:8px; border:1px solid #ddd;">순위</th>
-            <th style="padding:8px; border:1px solid #ddd;">곡 제목</th>
-          </tr>
-      `;
-
-      ranking.forEach((song, i) => {
-        html += `
-          <tr style="background:${i % 2 === 0 ? '#fff' : '#f2f2f2'};">
-            <td style="padding:8px; border:1px solid #ddd; text-align:center;">
-              ${i+1}
-            </td>
-            <td style="padding:8px; border:1px solid #ddd;">
-              ${i === 0 ? "👑 " : ""}${song.title}
-            </td>
-          </tr>
-        `;
-      });
-
-      html += `</table>`;
-
-      document.getElementById("result").innerHTML = html;
-      return;
-    }
-
-    shuffled = winners;
-    winners = [];
-    current = 0;
-    next = 1;
+  // ✅ 종료 조건
+  if (currentRound >= totalRounds) {
+    showResult();
+    return;
   }
 
+  currentRound++;
+
+  // ✅ 1단계: 전체 1번씩
+  if (!firstRoundDone) {
+    if (firstRoundQueue.length < 2) {
+      firstRoundDone = true;
+      return showMatch();
+    }
+
+    current = firstRoundQueue.pop();
+    next = firstRoundQueue.pop();
+
+  } else {
+    // ✅ 2단계: 선택된 곡만
+    const candidates = songs
+      .map((s, i) => ({ ...s, i }))
+      .filter(s => s.score > 0);
+
+    const pool = candidates.length >= 2
+      ? candidates
+      : songs.map((s, i) => ({ ...s, i }));
+
+    let a = pool[Math.floor(Math.random() * pool.length)].i;
+    let b;
+
+    do {
+      b = pool[Math.floor(Math.random() * pool.length)].i;
+    } while (a === b);
+
+    current = a;
+    next = b;
+  }
+
+  songs[current].match++;
+  songs[next].match++;
+
+  let remain = totalRounds - currentRound;
+
   document.getElementById("round").innerText =
-    `Round (${shuffled.length}강)`;
+    `🔥 ${remain}번 남음`;
 
-  renderThumb("leftPlayer", shuffled[current]);
-  renderThumb("rightPlayer", shuffled[next]);
+  renderThumb("leftPlayer", songs[current]);
+  renderThumb("rightPlayer", songs[next]);
 
-  document.getElementById("leftTitle").innerText = shuffled[current].title;
-  document.getElementById("rightTitle").innerText = shuffled[next].title;
+  document.getElementById("leftTitle").innerText = songs[current].title;
+  document.getElementById("rightTitle").innerText = songs[next].title;
 }
 
 function playVideo(side) {
-  const song = side === 0 ? shuffled[current] : shuffled[next];
+  const song = side === 0 ? songs[current] : songs[next];
   const target = side === 0 ? "leftPlayer" : "rightPlayer";
 
   document.getElementById(target).innerHTML = `
@@ -223,30 +244,61 @@ function playVideo(side) {
 }
 
 function pick(choice) {
-  let loser;
-
   if (choice === 0) {
-    winners.push(shuffled[current]);
-    loser = shuffled[next];
+    songs[current].score++;
   } else if (choice === 1) {
-    winners.push(shuffled[next]);
-    loser = shuffled[current];
-  } else {
+    songs[next].score++;
+  } else if (choice === 2) {
+    // 🤷 모르겠다
     const win = Math.random() > 0.5 ? current : next;
-    const lose = win === current ? next : current;
-    winners.push(shuffled[win]);
-    loser = shuffled[lose];
-  }
+    songs[win].score++;
+  } else if (choice === 3) {
+    // 💖 둘 다 좋다
+    songs[current]}};
+    
+function showResult() {
+  const sorted = [...songs].sort((a, b) => {
+    const rateA = a.match ? a.score / a.match : 0;
+    const rateB = b.match ? b.score / b.match : 0;
+    return rateB - rateA;
+  });
 
-  ranking.unshift(loser);
+  let html = `
+    <h2>🏆 전체 순위</h2>
+    <table style="margin:20px auto; border-collapse:collapse; width:400px; background:white;">
+      <tr style="background:#333; color:white;">
+        <th>순위</th>
+        <th>곡 제목</th>
+        <th>선택</th>
+        <th>등장</th>
+        <th>승률</th>
+      </tr>
+  `;
 
-  current += 2;
-  next += 2;
+  sorted.forEach((song, i) => {
+    const rate = song.match
+      ? ((song.score / song.match) * 100).toFixed(1)
+      : 0;
 
-  showMatch();
+    html += `
+      <tr>
+        <td>${i + 1}</td>
+        <td>${i === 0 ? "👑 " : ""}${song.title}</td>
+        <td>${song.score}</td>
+        <td>${song.match}</td>
+        <td>${rate}%</td>
+      </tr>
+    `;
+  });
+
+  html += `</table>`;
+
+  document.getElementById("result").innerHTML = html;
 }
 
 showMatch();
-</script> </h3>   
- </body>
+
+</script>
+
+</body>
 </html>
