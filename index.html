@@ -19,7 +19,7 @@ body {
 }
 
 .card {
-  width: 340px;
+  width: 280px;
   background: white;
   border-radius: 12px;
   padding: 10px;
@@ -56,14 +56,17 @@ body {
 }
 
 button {
-  font-size: 18px;
   margin-top: 10px;
-  padding: 10px 20px;
+  padding: 8px 14px;
   border: none;
   border-radius: 8px;
   background: #333;
   color: white;
   cursor: pointer;
+}
+
+.extra-buttons {
+  margin-top: 20px;
 }
 
 #result {
@@ -97,8 +100,10 @@ h3 {
   </div>
 </div>
 
-<button onclick="pick(3)" style="margin-top:50px; margin-right: 40px;">💖 둘 다 좋다</button>
-<button onclick="pick(2)">🤷 모르겠다</button>
+<div class="extra-buttons">
+  <button onclick="pick(3)">💖 둘 다 좋다</button>
+  <button onclick="pick(2)">🤷 모르겠다</button>
+</div>
 
 <div id="result"></div>
 
@@ -155,13 +160,11 @@ const songs = [
   { title: "이 도시는", id: "MKIDOE7BxUE", score: 0, match: 0 },
 ];
 
-// ✅ 전체 라운드 설정
 let totalRounds = songs.length + 30;
 let currentRound = 0;
 
 let current, next;
 
-// ✅ 1단계 큐
 let firstRoundQueue = [...songs.keys()].sort(() => Math.random() - 0.5);
 let firstRoundDone = false;
 
@@ -177,8 +180,6 @@ function renderThumb(targetId, song) {
 }
 
 function showMatch() {
-
-  // ✅ 종료 조건
   if (currentRound >= totalRounds) {
     showResult();
     return;
@@ -186,7 +187,6 @@ function showMatch() {
 
   currentRound++;
 
-  // ✅ 1단계: 전체 1번씩
   if (!firstRoundDone) {
     if (firstRoundQueue.length < 2) {
       firstRoundDone = true;
@@ -197,7 +197,6 @@ function showMatch() {
     next = firstRoundQueue.pop();
 
   } else {
-    // ✅ 2단계: 선택된 곡만
     const candidates = songs
       .map((s, i) => ({ ...s, i }))
       .filter(s => s.score > 0);
@@ -250,23 +249,26 @@ function pick(choice) {
   } else if (choice === 1) {
     songs[next].score++;
   } else if (choice === 2) {
-    // 🤷 모르겠다
     const win = Math.random() > 0.5 ? current : next;
     songs[win].score++;
   } else if (choice === 3) {
-    // 💖 둘 다 좋다
     songs[current].score++;
     songs[next].score++;
   }
 
   showMatch();
 }
-    
+
 function showResult() {
   const sorted = [...songs].sort((a, b) => {
     const rateA = a.match ? a.score / a.match : 0;
     const rateB = b.match ? b.score / b.match : 0;
-    return rateB - rateA;
+
+    if (rateB !== rateA) return rateB - rateA;
+    if (b.score !== a.score) return b.score - a.score;
+    if (b.match !== a.match) return b.match - a.match;
+
+    return 0;
   });
 
   let html = `
@@ -281,15 +283,28 @@ function showResult() {
       </tr>
   `;
 
+  let rank = 1;
+
   sorted.forEach((song, i) => {
+    if (i > 0) {
+      const prev = sorted[i - 1];
+
+      const same =
+        (song.score / song.match === prev.score / prev.match) &&
+        song.score === prev.score &&
+        song.match === prev.match;
+
+      if (!same) rank = i + 1;
+    }
+
     const rate = song.match
       ? ((song.score / song.match) * 100).toFixed(1)
       : 0;
 
     html += `
       <tr>
-        <td>${i + 1}</td>
-        <td>${i === 0 ? "👑 " : ""}${song.title}</td>
+        <td>${rank}</td>
+        <td>${rank === 1 ? "👑 " : ""}${song.title}</td>
         <td>${song.score}</td>
         <td>${song.match}</td>
         <td>${rate}%</td>
@@ -298,7 +313,6 @@ function showResult() {
   });
 
   html += `</table>`;
-
   document.getElementById("result").innerHTML = html;
 }
 
