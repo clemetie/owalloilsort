@@ -103,7 +103,9 @@ button {
   <div id="result"></div>
 </div>
 
-<button onclick="saveImage()">📸 결과 이미지 저장</button>
+<button id="saveBtn" onclick="saveImage()" style="display:none;">
+  📸 결과 이미지 저장
+</button>
 
 <!-- html2canvas -->
 <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
@@ -257,6 +259,7 @@ function showResult() {
     if (b.score !== a.score) return b.score - a.score;
     if (b.match !== a.match) return b.match - a.match;
     return 0;
+    document.getElementById("saveBtn").style.display = "inline-block";
   });
 
   let html = `<h2>🏆 전체 순위</h2>
