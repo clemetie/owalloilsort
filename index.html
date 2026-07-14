@@ -3,9 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/png" href="logo.png">
 <title>오월오일</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html {
+    scroll-padding-top: 100px;
+    scroll-behavior: smooth;
+  }
 
   body {
     font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Malgun Gothic", sans-serif;
@@ -118,7 +124,7 @@
   }
 
   .cal-header .cal-title {
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 700;
   }
 
@@ -319,10 +325,35 @@
     text-align: center;
   }
 
+  .setlist-search {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    font-size: 14px;
+    margin-bottom: 14px;
+    background: #fff;
+  }
+
+  .setlist-search:focus {
+    outline: none;
+    border-color: #aaa;
+  }
+
   .setlist-container {
     display: flex;
     flex-direction: column;
     gap: 10px;
+  }
+
+  .setlist-no-result {
+    color: #999;
+    font-size: 14px;
+    background: #fff;
+    border: 1px dashed #ccc;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
   }
 
   .pager {
@@ -412,9 +443,9 @@
 
   footer {
     text-align: center;
-    padding: 12px;
+    padding: 24px;
     color: #aaa;
-    font-size: 16px;
+    font-size: 12px;
   }
 </style>
 </head>
@@ -458,6 +489,7 @@
 
   <section id="setlist">
     <h2>Setlist</h2>
+    <input type="text" class="setlist-search" id="setlist-search" placeholder="공연명 또는 곡 제목 검색">
     <div class="setlist-container" id="setlist-container"></div>
     <div class="pager" id="setlist-pager" style="display:none;"></div>
   </section>
@@ -723,14 +755,34 @@
 
   const SETLIST_PAGE_SIZE = 5;
   let setlistPage = 1;
+  let setlistQuery = '';
   const SETLISTS_SORTED = SETLISTS.slice().reverse();
+
+  function getFilteredSetlists() {
+    if (!setlistQuery) return SETLISTS_SORTED;
+    const q = setlistQuery.toLowerCase();
+    return SETLISTS_SORTED.filter(function (show) {
+      if (show.title.toLowerCase().includes(q)) return true;
+      if (show.date.includes(q)) return true;
+      return show.songs.some(function (song) { return song.toLowerCase().includes(q); });
+    });
+  }
 
   function renderSetlists() {
     const containerEl = document.getElementById('setlist-container');
     const pagerEl = document.getElementById('setlist-pager');
-    const totalPages = Math.ceil(SETLISTS_SORTED.length / SETLIST_PAGE_SIZE);
+    const filtered = getFilteredSetlists();
+
+    if (filtered.length === 0) {
+      containerEl.innerHTML = '<div class="setlist-no-result">검색 결과가 없습니다.</div>';
+      pagerEl.style.display = 'none';
+      return;
+    }
+
+    const totalPages = Math.ceil(filtered.length / SETLIST_PAGE_SIZE);
+    if (setlistPage > totalPages) setlistPage = totalPages;
     const start = (setlistPage - 1) * SETLIST_PAGE_SIZE;
-    const pageShows = SETLISTS_SORTED.slice(start, start + SETLIST_PAGE_SIZE);
+    const pageShows = filtered.slice(start, start + SETLIST_PAGE_SIZE);
 
     containerEl.innerHTML = pageShows.map(function (show) {
       const songsHtml = show.songs.map(function (song) {
@@ -760,6 +812,12 @@
       if (setlistPage < totalPages) { setlistPage += 1; renderSetlists(); }
     });
   }
+
+  document.getElementById('setlist-search').addEventListener('input', function (e) {
+    setlistQuery = e.target.value.trim();
+    setlistPage = 1;
+    renderSetlists();
+  });
 
   document.addEventListener('DOMContentLoaded', renderSetlists);
 </script>
