@@ -9,7 +9,7 @@
 
   body {
     font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Malgun Gothic", sans-serif;
-    background: #fafafa;
+    background: #D1E8FC;
     color: #222;
     line-height: 1.6;
   }
@@ -211,6 +211,52 @@
     border-radius: 8px;
   }
 
+  .cal-day.has-event {
+    cursor: pointer;
+  }
+
+  .cal-day.has-event:hover {
+    background: #f5f5f5;
+  }
+
+  .cal-day.is-selected {
+    background: #eee;
+    font-weight: 700;
+  }
+
+  .cal-day-detail {
+    margin-top: 14px;
+    border-top: 1px solid #eee;
+    padding-top: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .cal-day-detail .cal-event-item {
+    background: #fafafa;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 10px 12px;
+  }
+
+  .cal-day-detail .cal-event-title {
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .cal-day-detail .cal-event-time {
+    font-size: 11px;
+    color: #999;
+    margin-top: 2px;
+  }
+
+  .cal-day-detail .cal-event-desc {
+    font-size: 12px;
+    color: #888;
+    margin-top: 4px;
+  }
+
   .cal-day.is-empty {
     visibility: hidden;
   }
@@ -388,7 +434,7 @@
 <body>
 
 <header>
-  <h1>Owalloil</h1>
+  <h1>OWALLOIL</h1>
   <nav>
     <a href="#calendar">캘린더</a>
     <a href="#schedule">일정</a>
@@ -398,7 +444,7 @@
 
 <div class="mini-yt">
   <iframe
-    src="https://www.youtube.com/embed/Sx_8sO8Tm_M?si=6-RXaEOlPKB6805c&autoplay=1&mute=1&playsinline=1"
+    src="https://www.youtube.com/embed/Sx_8sO8Tm_M?si=6-RXaEOlPKB6805c&autoplay=1&playsinline=1"
     title="YouTube video player"
     frameborder="0"
     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -434,6 +480,7 @@
       </div>
       <div class="cal-grid" id="cal-grid"></div>
       <div class="cal-loading" id="cal-loading" style="display:none;">불러오는 중...</div>
+      <div class="cal-day-detail" id="cal-day-detail" style="display:none;"></div>
     </div>
   </section>
 
@@ -511,21 +558,25 @@
 
   let calViewYear = new Date().getFullYear();
   let calViewMonth = new Date().getMonth();
+  let calEventsByDay = {};
 
   async function loadCalendarMonth(year, month) {
     const gridEl = document.getElementById('cal-grid');
     const titleEl = document.getElementById('cal-title');
     const loadingEl = document.getElementById('cal-loading');
+    const detailEl = document.getElementById('cal-day-detail');
 
     titleEl.textContent = year + '년 ' + (month + 1) + '월';
     loadingEl.style.display = 'block';
+    detailEl.style.display = 'none';
+    detailEl.innerHTML = '';
 
     const timeMin = new Date(year, month, 1).toISOString();
     const timeMax = new Date(year, month + 1, 1).toISOString();
     const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(CALENDAR_ID)}/events`
       + `?key=${GOOGLE_API_KEY}&timeMin=${encodeURIComponent(timeMin)}&timeMax=${encodeURIComponent(timeMax)}&singleEvents=true&orderBy=startTime&maxResults=100`;
 
-    let eventDays = new Set();
+    calEventsByDay = {};
     try {
       const res = await fetch(url);
       if (res.ok) {
@@ -533,7 +584,9 @@
         (data.items || []).forEach(function (ev) {
           const raw = ev.start.dateTime || ev.start.date;
           const d = new Date(raw);
-          eventDays.add(d.getFullYear() + '-' + d.getMonth() + '-' + d.getDate());
+          const day = d.getDate();
+          if (!calEventsByDay[day]) calEventsByDay[day] = [];
+          calEventsByDay[day].push(ev);
         });
       }
     } catch (err) {
@@ -541,10 +594,10 @@
     }
 
     loadingEl.style.display = 'none';
-    renderCalendarGrid(gridEl, year, month, eventDays);
+    renderCalendarGrid(gridEl, year, month, calEventsByDay);
   }
 
-  function renderCalendarGrid(gridEl, year, month, eventDays) {
+  function renderCalendarGrid(gridEl, year, month, eventsByDay) {
     const firstDayIndex = new Date(year, month, 1).getDay();
     const daysInMonth = new Date(year, month + 1, 0).getDate();
     const today = new Date();
@@ -555,10 +608,9 @@
       html += '<div class="cal-day is-empty"></div>';
     }
     for (let day = 1; day <= daysInMonth; day++) {
-      const key = year + '-' + month + '-' + day;
-      const hasEvent = eventDays.has(key);
+      const hasEvent = !!eventsByDay[day];
       const isToday = isCurrentMonth && today.getDate() === day;
-      html += '<div class="cal-day' + (isToday ? ' is-today' : '') + '">'
+      html += '<div class="cal-day' + (isToday ? ' is-today' : '') + (hasEvent ? ' has-event' : '') + '" data-day="' + day + '">'
         + day
         + (hasEvent ? '<span class="cal-dot"></span>' : '')
         + '</div>';
@@ -566,6 +618,44 @@
 
     gridEl.innerHTML = html;
   }
+
+  function showDayDetail(day) {
+    const detailEl = document.getElementById('cal-day-detail');
+    const events = calEventsByDay[day];
+
+    document.querySelectorAll('#cal-grid .cal-day').forEach(function (el) {
+      el.classList.toggle('is-selected', el.dataset.day === String(day));
+    });
+
+    if (!events || events.length === 0) {
+      detailEl.style.display = 'none';
+      detailEl.innerHTML = '';
+      return;
+    }
+
+    detailEl.innerHTML = events.map(function (ev) {
+      const rawStart = ev.start.dateTime || ev.start.date;
+      const startDate = new Date(rawStart);
+      const isAllDay = !ev.start.dateTime;
+      const timeLabel = isAllDay ? '종일' : startDate.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+      const title = ev.summary || '(제목 없음)';
+      const desc = ev.location || ev.description || '';
+
+      return '<div class="cal-event-item">'
+        + '<div class="cal-event-title">' + escapeHtml(title) + '</div>'
+        + '<div class="cal-event-time">' + timeLabel + '</div>'
+        + (desc ? '<div class="cal-event-desc">' + desc + '</div>' : '')
+        + '</div>';
+    }).join('');
+
+    detailEl.style.display = 'flex';
+  }
+
+  document.getElementById('cal-grid').addEventListener('click', function (e) {
+    const dayEl = e.target.closest('.cal-day.has-event');
+    if (!dayEl) return;
+    showDayDetail(dayEl.dataset.day);
+  });
 
   document.getElementById('cal-prev').addEventListener('click', function () {
     calViewMonth -= 1;
@@ -586,7 +676,7 @@
   const SETLISTS = [
     { date: '25.06.14', title: '울산달빛축제', songs: ['Harvest Day','Look My Moon','Last Dance','She Said','Lunch Time','London Time','Scentria Forest','Cherry Roman Candle'] },
     { date: '25.07.09', title: '튠업 26기 선정 공연', songs: ['Young adult','Echo','Scentria forest','Wish','Merry go round','London time','Tree','Cherry roman candle','Lunch time'] },
-    { date: '25.07.11', title: '인디신', songs: ['I dare you','Spirit','유전','Echo','Scentria forest','Magic train','Young adult','Tree','봉숭아','Harvest day','Look my moon','Last dance','노란세상','She said','Wish','Merry go around','London time','Lunch time','(앵콜) Cherry roman candle'] },
+    { date: '25.07.11', title: '대구 인디신 페스티벌', songs: ['I dare you','Spirit','유전','Echo','Scentria forest','Magic train','Young adult','Tree','봉숭아','Harvest day','Look my moon','Last dance','노란세상','She said','Wish','Merry go around','London time','Lunch time','(앵콜) Cherry roman candle'] },
     { date: '25.08.16', title: '데미소다 콘서트', songs: ['Lunch time','She said','Scentria Forest','Wish','London time','Cherry roman candle'] },
     { date: '25.08.31', title: '메가필드뮤직페스티벌', songs: ['Rooftop','Merry go round','Echo','Scentria forest','Last dance','Wish','London time','Lunch time','She said','Cherry roman candle'] },
     { date: '25.09.27', title: '울산고래축제', songs: ['Scentria Forest','She Said','London Time','Cherry Roman Candle'] },
@@ -595,8 +685,8 @@
     { date: '25.12.20', title: '꿈의숲 밴드콘서트', songs: ['유월의 낮','Run','Harvest Day','Look my moon','런치타임','우리가 마주한 이 자리가','Cherry Roman Candle','노란세상','청춘','에코','Tree','루프탑'] },
     { date: '25.12.25', title: '썸데이 크리스마스 부산', songs: ['나를 싫어했던 사람들에게','She Said','Echo','이에르','Last Dance','Merry Go Round','London Time','7080 러브 (미발매 곡)','Lunch Time','Creaminal','Rooftop','Cherry Roman Candle'] },
     { date: '25.12.30', title: '카운트다운판타지', songs: ['echo','Scentria forest','Lunch time','Wish','Creaminal','나를 싫어했던 사람들에게','Rooftop','Cherry roman candle'] },
-    { date: '26.02.21', title: '아쿠아 첫콘', songs: ['Intro','너에게','Scentria Forest','Harvest Day','두비두','In The Forest','Magic Train','Wish','Lunch Time','오월오일이 나가신다','나를 싫어했던 사람들에게','Echo','이에르','Spirit','유전','샴수사바','등기타','구기동과 반딧불이','Look My Moon','Last dance','She Said','London Time','I Dare You','Merry Go Round','Creaminal','We Don\'t Stop Now','Rooftop','Journey','Leaves','Cherry Roman Candle'] },
-    { date: '26.02.22', title: '아쿠아 막콘', songs: ['Intro','너에게','Scentria Forest','Harvest Day','두비두','In The Forest','Magic Train','Wish','Lunch Time','오월오일이 나가신다','나를 싫어했던 사람들에게','Echo','이에르','Spirit','유전','샴수사바','등기타','구기동과 반딧불이','노란세상','Look My Moon','She Said','London Time','I Dare You','Merry Go Round','Creaminal','We Don\'t Stop Now','Rooftop','Journey','Leaves','Cherry Roman Candle'] },
+    { date: '26.02.21', title: '오월오일 단독콘서트 <Aqua> Day.1', songs: ['Intro','너에게','Scentria Forest','Harvest Day','두비두','In The Forest','Magic Train','Wish','Lunch Time','오월오일이 나가신다','나를 싫어했던 사람들에게','Echo','이에르','Spirit','유전','샴수사바','등기타','구기동과 반딧불이','Look My Moon','Last dance','She Said','London Time','I Dare You','Merry Go Round','Creaminal','We Don\'t Stop Now','Rooftop','Journey','Leaves','Cherry Roman Candle'] },
+    { date: '26.02.22', title: '오월오일 단독콘서트 <Aqua> Day.2', songs: ['Intro','너에게','Scentria Forest','Harvest Day','두비두','In The Forest','Magic Train','Wish','Lunch Time','오월오일이 나가신다','나를 싫어했던 사람들에게','Echo','이에르','Spirit','유전','샴수사바','등기타','구기동과 반딧불이','노란세상','Look My Moon','She Said','London Time','I Dare You','Merry Go Round','Creaminal','We Don\'t Stop Now','Rooftop','Journey','Leaves','Cherry Roman Candle'] },
     { date: '26.04.05', title: '민트페스타', songs: ['Magic train','Lunchtime','Echo','Scentria forest','나를 싫어했던 사람들에게','London time','Wish','Rooftop','Cherry roman candle'] },
     { date: '26.04.19', title: '그린캠프 페스티벌', songs: ['Merry go round','I dare you','Wish','Rooftop','Echo','나를 싫어했던 사람들에게','Scentria forest','Lunchtime','London time','She said','Cherry Roman Candle'] },
     { date: '26.04.25', title: '어썸뮤직페스티벌', songs: ['Lunchtime','Rooftop','Merry go round','Leaves','London Time','Echo','나를 싫어했던 사람들에게','I Dare You','Wish','Creaminal','Sentria Forest','She Said','Cherry roman candle'] },
@@ -605,10 +695,10 @@
     { date: '26.05.03', title: 'OWALLOIL CONCERT [5×5] DAY 3', songs: ['Echo','Merry go round','Look my moon','봉숭아','Daylight','너에게','We don\'t stop now','Last dance','Sentria Forest','Jyo','Leaves'] },
     { date: '26.05.04', title: 'OWALLOIL CONCERT [5×5] DAY 4', songs: ['Intro','Scentria forest','Merry go round','Look my moon','Echo','Daylight','두비두','We don\'t stop now','She said','안나뷰','Leaves'] },
     { date: '26.05.05', title: 'OWALLOIL CONCERT [5×5] DAY 5', songs: ['intro','She said','Merry go round','Look my moon','Cherry roman candle','Daylight','여름밤의 꿈','We don\'t stop now','Tree','I dare you','등기타','Leaves','미발매곡 with 오드리 🫧','Cherry roman candle'] },
-    { date: '26.05.17', title: '이승윤 콘서트 밖', songs: ['She said','scentria forest','I dare you','Merry go round','echo','이에르','Creaminal','Cherry roman candle'] },
+    { date: '26.05.17', title: '이승윤 콘서트 [밖]', songs: ['She said','scentria forest','I dare you','Merry go round','echo','이에르','Creaminal','Cherry roman candle'] },
     { date: '26.05.31', title: '뷰티풀민트라이프', songs: ['나를 싫어했던 사람들에게','Scentria forest','Echo','She said','Last dance','Look my moon','I dare you','Wish','Creaminal','Cherry roman candle'] },
     { date: '26.06.11', title: '강남목요예술무대', songs: ['유월의 낮','Lunchtime','Ssy','Vivid nightmare','샴수사바','Echo','Scentria Forest','나를 싫어했던 사람들에게','Look My Moon','Rooftop','She Said','Cherry roman candle'] },
-    { date: '26.06.24', title: '창원 수요콘서트', songs: ['harvest day','Look my moon','SSY','Magic train','in the forest','echo','epilogue','이에르','scentria forest','나를 싫어했던 사람들에게','She said','Last dance','Merry go round','I dare you','Wish','Lunchtime','London Time','creaminal','Rooftop','leaves','Cherry roman candle'] }
+    { date: '26.06.24', title: 'Super! 창원 수요콘서트', songs: ['harvest day','Look my moon','SSY','Magic train','in the forest','echo','epilogue','이에르','scentria forest','나를 싫어했던 사람들에게','She said','Last dance','Merry go round','I dare you','Wish','Lunchtime','London Time','creaminal','Rooftop','leaves','Cherry roman candle'] }
   ];
 
   function renderSetlists() {
