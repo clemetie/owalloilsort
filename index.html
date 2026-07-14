@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>덕질 사이트</title>
+<title>owalloil</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -68,7 +68,6 @@
     border-left: 4px solid #111;
   }
 
-  /* ---- 상단 SNS 링크 ---- */
   .sns-row {
     list-style: none;
     display: flex;
@@ -95,7 +94,6 @@
     background: #f7f7f7;
   }
 
-  /* ---- 캘린더 영역 ---- */
   #calendar .calendar-wrap {
     display: flex;
     justify-content: center;
@@ -107,7 +105,6 @@
     border-radius: 8px;
   }
 
-  /* ---- 일정 리스트 ---- */
   .schedule-list {
     list-style: none;
     display: flex;
@@ -126,10 +123,19 @@
 
   .schedule-date {
     flex-shrink: 0;
-    width: 44px;
+    width: 52px;
     font-size: 12px;
     font-weight: 700;
     color: #666;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .schedule-time {
+    font-size: 11px;
+    font-weight: 500;
+    color: #aaa;
   }
 
   .schedule-body {
@@ -155,8 +161,12 @@
 
   @media (max-width: 480px) {
     .schedule-date {
-      width: 38px;
+      width: 46px;
       font-size: 11px;
+    }
+
+    .schedule-time {
+      font-size: 10px;
     }
 
     .schedule-body .schedule-title {
@@ -179,6 +189,65 @@
     text-align: center;
   }
 
+  /* ---- 셋리스트 ---- */
+  .setlist-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .setlist-item {
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 10px;
+    padding: 4px 16px;
+  }
+
+  .setlist-item summary {
+    cursor: pointer;
+    list-style: none;
+    padding: 14px 0;
+    font-size: 14px;
+    font-weight: 600;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .setlist-item summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .setlist-item summary::after {
+    content: '+';
+    flex-shrink: 0;
+    font-size: 16px;
+    font-weight: 400;
+    color: #999;
+    transition: transform 0.15s;
+  }
+
+  .setlist-item[open] summary::after {
+    content: '−';
+  }
+
+  .setlist-item summary .setlist-date {
+    color: #999;
+    font-weight: 500;
+    margin-right: 8px;
+  }
+
+  .setlist-songs {
+    list-style: decimal;
+    padding: 0 0 16px 20px;
+    font-size: 13px;
+    color: #444;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
   footer {
     text-align: center;
     padding: 24px;
@@ -194,6 +263,7 @@
   <nav>
     <a href="#calendar">캘린더</a>
     <a href="#schedule">일정</a>
+    <a href="#setlist">셋리스트</a>
   </nav>
 </header>
 
@@ -220,6 +290,11 @@
     </ul>
   </section>
 
+  <section id="setlist">
+    <h2>셋리스트</h2>
+    <div class="setlist-container" id="setlist-container"></div>
+  </section>
+
 </main>
 
 <footer>
@@ -227,12 +302,6 @@
 </footer>
 
 <script>
-  // ============================================
-  // 아래 두 값만 본인 것으로 교체하면 됩니다.
-  // 1) GOOGLE_API_KEY: 구글 클라우드 콘솔에서 발급한 API 키
-  // 2) CALENDAR_ID: 캘린더 iframe에 쓴 것과 동일한 캘린더 주소
-  //    ※ 해당 캘린더는 "공개 캘린더"로 설정되어 있어야 합니다.
-  // ============================================
   const GOOGLE_API_KEY = 'AIzaSyCizEquK5yjfW7yRGogF0_yRvOgmQRNrKw';
   const CALENDAR_ID = 'nunguleum093@gmail.com';
 
@@ -263,11 +332,13 @@
       const rawStart = ev.start.dateTime || ev.start.date;
       const startDate = new Date(rawStart);
       const dateLabel = (startDate.getMonth() + 1) + '.' + startDate.getDate();
+      const isAllDay = !ev.start.dateTime;
+      const timeLabel = isAllDay ? '종일' : startDate.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
       const title = ev.summary || '(제목 없음)';
       const desc = ev.location || ev.description || '';
 
       return '<li>'
-        + '<div class="schedule-date">' + dateLabel + '</div>'
+        + '<div class="schedule-date">' + dateLabel + '<span class="schedule-time">' + timeLabel + '</span></div>'
         + '<div class="schedule-body">'
         + '<div class="schedule-title">' + escapeHtml(title) + '</div>'
         + '<div class="schedule-desc">' + desc + '</div>'
@@ -283,6 +354,56 @@
   }
 
   document.addEventListener('DOMContentLoaded', loadSchedule);
+
+  // ============================================
+  // 셋리스트 데이터
+  // 새 공연을 추가하려면 아래 배열에 { date, title, songs } 객체를 하나 더 넣으면 됩니다.
+  // ============================================
+  const SETLISTS = [
+    { date: '25.06.14', title: '울산달빛축제', songs: ['Harvest Day','Look My Moon','Last Dance','She Said','Lunch Time','London Time','Scentria Forest','Cherry Roman Candle'] },
+    { date: '25.07.09', title: '튠업 26기 선정 공연', songs: ['Young adult','Echo','Scentria forest','Wish','Merry go round','London time','Tree','Cherry roman candle','Lunch time'] },
+    { date: '25.07.11', title: '인디신', songs: ['I dare you','Spirit','유전','Echo','Scentria forest','Magic train','Young adult','Tree','봉숭아','Harvest day','Look my moon','Last dance','노란세상','She said','Wish','Merry go around','London time','Lunch time','(앵콜) Cherry roman candle'] },
+    { date: '25.08.16', title: '데미소다 콘서트', songs: ['Lunch time','She said','Scentria Forest','Wish','London time','Cherry roman candle'] },
+    { date: '25.08.31', title: '메가필드뮤직페스티벌', songs: ['Rooftop','Merry go round','Echo','Scentria forest','Last dance','Wish','London time','Lunch time','She said','Cherry roman candle'] },
+    { date: '25.09.27', title: '울산고래축제', songs: ['Scentria Forest','She Said','London Time','Cherry Roman Candle'] },
+    { date: '25.09.28', title: '부산국제록페스티벌', songs: ['Scentria forest','Lunch time','She said','Rooftop','London time','Echo','나를 싫어했던 사람들에게','Cherry roman candle'] },
+    { date: '25.10.18', title: '그랜드민트페스티벌', songs: ['rooftop','Wish','Lunchtime','She said','Scentria Forest','노란세상','Echo','London time','나를 싫어했던 사람들에게','Cherry roman candle'] },
+    { date: '25.12.20', title: '꿈의숲 밴드콘서트', songs: ['유월의 낮','Run','Harvest Day','Look my moon','런치타임','우리가 마주한 이 자리가','Cherry Roman Candle','노란세상','청춘','에코','Tree','루프탑'] },
+    { date: '25.12.25', title: '썸데이 크리스마스 부산', songs: ['나를 싫어했던 사람들에게','She Said','Echo','이에르','Last Dance','Merry Go Round','London Time','7080 러브 (미발매 곡)','Lunch Time','Creaminal','Rooftop','Cherry Roman Candle'] },
+    { date: '25.12.30', title: '카운트다운판타지', songs: ['echo','Scentria forest','Lunch time','Wish','Creaminal','나를 싫어했던 사람들에게','Rooftop','Cherry roman candle'] },
+    { date: '26.02.21', title: '아쿠아 첫콘', songs: ['Intro','너에게','Scentria Forest','Harvest Day','두비두','In The Forest','Magic Train','Wish','Lunch Time','오월오일이 나가신다','나를 싫어했던 사람들에게','Echo','이에르','Spirit','유전','샴수사바','등기타','구기동과 반딧불이','Look My Moon','Last dance','She Said','London Time','I Dare You','Merry Go Round','Creaminal','We Don\'t Stop Now','Rooftop','Journey','Leaves','Cherry Roman Candle'] },
+    { date: '26.02.22', title: '아쿠아 막콘', songs: ['Intro','너에게','Scentria Forest','Harvest Day','두비두','In The Forest','Magic Train','Wish','Lunch Time','오월오일이 나가신다','나를 싫어했던 사람들에게','Echo','이에르','Spirit','유전','샴수사바','등기타','구기동과 반딧불이','노란세상','Look My Moon','She Said','London Time','I Dare You','Merry Go Round','Creaminal','We Don\'t Stop Now','Rooftop','Journey','Leaves','Cherry Roman Candle'] },
+    { date: '26.04.05', title: '민트페스타', songs: ['Magic train','Lunchtime','Echo','Scentria forest','나를 싫어했던 사람들에게','London time','Wish','Rooftop','Cherry roman candle'] },
+    { date: '26.04.19', title: '그린캠프 페스티벌', songs: ['Merry go round','I dare you','Wish','Rooftop','Echo','나를 싫어했던 사람들에게','Scentria forest','Lunchtime','London time','She said','Cherry Roman Candle'] },
+    { date: '26.04.25', title: '어썸뮤직페스티벌', songs: ['Lunchtime','Rooftop','Merry go round','Leaves','London Time','Echo','나를 싫어했던 사람들에게','I Dare You','Wish','Creaminal','Sentria Forest','She Said','Cherry roman candle'] },
+    { date: '26.05.01', title: 'OWALLOIL CONCERT [5×5] DAY 1', songs: ['Intro','SSY','메리고라운드','룩마문','I met My friend in the water','Daylight','별빛이 내린다','We don\'t stop now','Lunch time','Wish','Jyo','Leaves'] },
+    { date: '26.05.02', title: 'OWALLOIL CONCERT [5×5] DAY 2', songs: ['Tree','Merry go round','Look my moon','청춘','Daylight','손','We dont stop now','London Time','Rooftop','안나뷰','Leaves'] },
+    { date: '26.05.03', title: 'OWALLOIL CONCERT [5×5] DAY 3', songs: ['Echo','Merry go round','Look my moon','봉숭아','Daylight','너에게','We don\'t stop now','Last dance','Sentria Forest','Jyo','Leaves'] },
+    { date: '26.05.04', title: 'OWALLOIL CONCERT [5×5] DAY 4', songs: ['Intro','Scentria forest','Merry go round','Look my moon','Echo','Daylight','두비두','We don\'t stop now','She said','안나뷰','Leaves'] },
+    { date: '26.05.05', title: 'OWALLOIL CONCERT [5×5] DAY 5', songs: ['intro','She said','Merry go round','Look my moon','Cherry roman candle','Daylight','여름밤의 꿈','We don\'t stop now','Tree','I dare you','등기타','Leaves','미발매곡 with 오드리 🫧','Cherry roman candle'] },
+    { date: '26.05.17', title: '이승윤 콘서트 밖', songs: ['She said','scentria forest','I dare you','Merry go round','echo','이에르','Creaminal','Cherry roman candle'] },
+    { date: '26.05.31', title: '뷰티풀민트라이프', songs: ['나를 싫어했던 사람들에게','Scentria forest','Echo','She said','Last dance','Look my moon','I dare you','Wish','Creaminal','Cherry roman candle'] },
+    { date: '26.06.11', title: '강남목요예술무대', songs: ['유월의 낮','Lunchtime','Ssy','Vivid nightmare','샴수사바','Echo','Scentria Forest','나를 싫어했던 사람들에게','Look My Moon','Rooftop','She Said','Cherry roman candle'] },
+    { date: '26.06.24', title: '창원 수요콘서트', songs: ['harvest day','Look my moon','SSY','Magic train','in the forest','echo','epilogue','이에르','scentria forest','나를 싫어했던 사람들에게','She said','Last dance','Merry go round','I dare you','Wish','Lunchtime','London Time','creaminal','Rooftop','leaves','Cherry roman candle'] }
+  ];
+
+  function renderSetlists() {
+    const containerEl = document.getElementById('setlist-container');
+    const sorted = SETLISTS.slice().reverse(); // 최신 공연이 위로 오도록 정렬
+
+    containerEl.innerHTML = sorted.map(function (show) {
+      const songsHtml = show.songs.map(function (song) {
+        return '<li>' + escapeHtml(song) + '</li>';
+      }).join('');
+
+      return '<details class="setlist-item">'
+        + '<summary><span><span class="setlist-date">' + escapeHtml(show.date) + '</span>' + escapeHtml(show.title) + '</span></summary>'
+        + '<ol class="setlist-songs">' + songsHtml + '</ol>'
+        + '</details>';
+    }).join('');
+  }
+
+  document.addEventListener('DOMContentLoaded', renderSetlists);
 </script>
 
 </body>
