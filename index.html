@@ -95,9 +95,9 @@
 
   .sns-row {
     list-style: none;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
   }
 
   .sns-row a {
@@ -105,11 +105,15 @@
     background: #fff;
     border: 1px solid #eee;
     border-radius: 10px;
-    padding: 14px 16px;
+    padding: 10px 6px;
     text-decoration: none;
     color: #222;
-    font-size: 14px;
+    font-size: 12px;
     font-weight: 500;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     transition: border-color 0.15s, background 0.15s;
   }
 
@@ -458,7 +462,8 @@
   <section id="sns">
     <div class="sns-row">
       <a href="https://www.instagram.com/owalloil_official/" target="_blank" rel="noopener">📷 인스타그램</a>
-      <a href="https://www.youtube.com/channel/UCctIiky5oowTJH8Kr678Uqg" target="_blank" rel="noopener">▶️ 유튜브</a>
+      <a href="https://www.youtube.com/@OWALLOIL" target="_blank" rel="noopener">▶️ 유튜브</a>
+      <a href="https://music.youtube.com/channel/UCp-MnUXH3vPP0uh8s4-rxQQ" target="_blank" rel="noopener">🎵 유튜브뮤직</a>
     </div>
     <div class="music-row">
       <a href="https://music.apple.com/kr/artist/오월오일/1587319780" target="_blank" rel="noopener">🍎 애플뮤직</a>
