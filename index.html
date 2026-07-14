@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>owalloil</title>
+<title>오월오일</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -21,6 +21,31 @@
     position: sticky;
     top: 0;
     z-index: 10;
+  }
+
+  .mini-yt {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    width: 120px;
+    aspect-ratio: 16 / 9;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+    z-index: 50;
+  }
+
+  .mini-yt iframe {
+    width: 100%;
+    height: 100%;
+    display: block;
+    border: 0;
+  }
+
+  @media (max-width: 480px) {
+    .mini-yt {
+      width: 88px;
+    }
   }
 
   header h1 {
@@ -94,15 +119,120 @@
     background: #f7f7f7;
   }
 
-  #calendar .calendar-wrap {
+  .music-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  .music-row a {
+    display: block;
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 10px;
+    padding: 10px 6px;
+    text-decoration: none;
+    color: #222;
+    font-size: 12px;
+    font-weight: 500;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: border-color 0.15s, background 0.15s;
+  }
+
+  .music-row a:hover,
+  .music-row a:focus-visible {
+    border-color: #ccc;
+    background: #f7f7f7;
+  }
+
+  #calendar .calendar-card {
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 14px;
+    padding: 20px;
+  }
+
+  .cal-header {
     display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+
+  .cal-header .cal-title {
+    font-size: 15px;
+    font-weight: 700;
+  }
+
+  .cal-nav-btn {
+    border: none;
+    background: #f5f5f5;
+    color: #333;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
     justify-content: center;
   }
 
-  #calendar iframe {
-    display: block;
-    max-width: 100%;
+  .cal-nav-btn:hover {
+    background: #eee;
+  }
+
+  .cal-weekdays,
+  .cal-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+  }
+
+  .cal-weekdays span {
+    text-align: center;
+    font-size: 11px;
+    color: #aaa;
+    padding-bottom: 8px;
+  }
+
+  .cal-day {
+    position: relative;
+    aspect-ratio: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: #333;
     border-radius: 8px;
+  }
+
+  .cal-day.is-empty {
+    visibility: hidden;
+  }
+
+  .cal-day.is-today {
+    background: #fff7e6;
+    font-weight: 700;
+  }
+
+  .cal-day .cal-dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: #e0a300;
+    margin-top: 3px;
+  }
+
+  .cal-loading {
+    text-align: center;
+    font-size: 12px;
+    color: #aaa;
+    padding: 12px 0;
   }
 
   .schedule-list {
@@ -189,7 +319,6 @@
     text-align: center;
   }
 
-  /* ---- 셋리스트 ---- */
   .setlist-container {
     display: flex;
     flex-direction: column;
@@ -259,13 +388,24 @@
 <body>
 
 <header>
-  <h1>🌟 덕질 사이트</h1>
+  <h1>Owalloil</h1>
   <nav>
     <a href="#calendar">캘린더</a>
     <a href="#schedule">일정</a>
     <a href="#setlist">셋리스트</a>
   </nav>
 </header>
+
+<div class="mini-yt">
+  <iframe
+    src="https://www.youtube.com/embed/Sx_8sO8Tm_M?si=6-RXaEOlPKB6805c&autoplay=1&mute=1&playsinline=1"
+    title="YouTube video player"
+    frameborder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+    referrerpolicy="strict-origin-when-cross-origin"
+    allowfullscreen>
+  </iframe>
+</div>
 
 <main>
 
@@ -274,12 +414,26 @@
       <a href="https://www.instagram.com/owalloil_official/" target="_blank" rel="noopener">📷 인스타그램</a>
       <a href="https://www.youtube.com/channel/UCctIiky5oowTJH8Kr678Uqg" target="_blank" rel="noopener">▶️ 유튜브</a>
     </div>
+    <div class="music-row">
+      <a href="https://music.apple.com/kr/artist/오월오일/1587319780" target="_blank" rel="noopener">🍎 애플뮤직</a>
+      <a href="https://www.melon.com/artist/song.htm?artistId=2743985" target="_blank" rel="noopener">🍈 멜론</a>
+      <a href="https://open.spotify.com/artist/59THIwTnvgT7SeGFzocky2" target="_blank" rel="noopener">🎧 스포티파이</a>
+    </div>
   </section>
 
   <section id="calendar">
     <h2>캘린더</h2>
-    <div class="calendar-wrap">
-      <iframe src="https://calendar.google.com/calendar/embed?src=nunguleum093%40gmail.com&ctz=Asia%2FSeoul" style="border: 0" width="800" height="600" frameborder="0" scrolling="no"></iframe>
+    <div class="calendar-card">
+      <div class="cal-header">
+        <button class="cal-nav-btn" id="cal-prev" aria-label="이전 달">‹</button>
+        <div class="cal-title" id="cal-title"></div>
+        <button class="cal-nav-btn" id="cal-next" aria-label="다음 달">›</button>
+      </div>
+      <div class="cal-weekdays">
+        <span>일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span>
+      </div>
+      <div class="cal-grid" id="cal-grid"></div>
+      <div class="cal-loading" id="cal-loading" style="display:none;">불러오는 중...</div>
     </div>
   </section>
 
@@ -355,10 +509,80 @@
 
   document.addEventListener('DOMContentLoaded', loadSchedule);
 
-  // ============================================
-  // 셋리스트 데이터
-  // 새 공연을 추가하려면 아래 배열에 { date, title, songs } 객체를 하나 더 넣으면 됩니다.
-  // ============================================
+  let calViewYear = new Date().getFullYear();
+  let calViewMonth = new Date().getMonth();
+
+  async function loadCalendarMonth(year, month) {
+    const gridEl = document.getElementById('cal-grid');
+    const titleEl = document.getElementById('cal-title');
+    const loadingEl = document.getElementById('cal-loading');
+
+    titleEl.textContent = year + '년 ' + (month + 1) + '월';
+    loadingEl.style.display = 'block';
+
+    const timeMin = new Date(year, month, 1).toISOString();
+    const timeMax = new Date(year, month + 1, 1).toISOString();
+    const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(CALENDAR_ID)}/events`
+      + `?key=${GOOGLE_API_KEY}&timeMin=${encodeURIComponent(timeMin)}&timeMax=${encodeURIComponent(timeMax)}&singleEvents=true&orderBy=startTime&maxResults=100`;
+
+    let eventDays = new Set();
+    try {
+      const res = await fetch(url);
+      if (res.ok) {
+        const data = await res.json();
+        (data.items || []).forEach(function (ev) {
+          const raw = ev.start.dateTime || ev.start.date;
+          const d = new Date(raw);
+          eventDays.add(d.getFullYear() + '-' + d.getMonth() + '-' + d.getDate());
+        });
+      }
+    } catch (err) {
+      console.error(err);
+    }
+
+    loadingEl.style.display = 'none';
+    renderCalendarGrid(gridEl, year, month, eventDays);
+  }
+
+  function renderCalendarGrid(gridEl, year, month, eventDays) {
+    const firstDayIndex = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const today = new Date();
+    const isCurrentMonth = today.getFullYear() === year && today.getMonth() === month;
+
+    let html = '';
+    for (let i = 0; i < firstDayIndex; i++) {
+      html += '<div class="cal-day is-empty"></div>';
+    }
+    for (let day = 1; day <= daysInMonth; day++) {
+      const key = year + '-' + month + '-' + day;
+      const hasEvent = eventDays.has(key);
+      const isToday = isCurrentMonth && today.getDate() === day;
+      html += '<div class="cal-day' + (isToday ? ' is-today' : '') + '">'
+        + day
+        + (hasEvent ? '<span class="cal-dot"></span>' : '')
+        + '</div>';
+    }
+
+    gridEl.innerHTML = html;
+  }
+
+  document.getElementById('cal-prev').addEventListener('click', function () {
+    calViewMonth -= 1;
+    if (calViewMonth < 0) { calViewMonth = 11; calViewYear -= 1; }
+    loadCalendarMonth(calViewYear, calViewMonth);
+  });
+
+  document.getElementById('cal-next').addEventListener('click', function () {
+    calViewMonth += 1;
+    if (calViewMonth > 11) { calViewMonth = 0; calViewYear += 1; }
+    loadCalendarMonth(calViewYear, calViewMonth);
+  });
+
+  document.addEventListener('DOMContentLoaded', function () {
+    loadCalendarMonth(calViewYear, calViewMonth);
+  });
+
   const SETLISTS = [
     { date: '25.06.14', title: '울산달빛축제', songs: ['Harvest Day','Look My Moon','Last Dance','She Said','Lunch Time','London Time','Scentria Forest','Cherry Roman Candle'] },
     { date: '25.07.09', title: '튠업 26기 선정 공연', songs: ['Young adult','Echo','Scentria forest','Wish','Merry go round','London time','Tree','Cherry roman candle','Lunch time'] },
@@ -389,7 +613,7 @@
 
   function renderSetlists() {
     const containerEl = document.getElementById('setlist-container');
-    const sorted = SETLISTS.slice().reverse(); // 최신 공연이 위로 오도록 정렬
+    const sorted = SETLISTS.slice().reverse();
 
     containerEl.innerHTML = sorted.map(function (show) {
       const songsHtml = show.songs.map(function (song) {
