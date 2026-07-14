@@ -23,31 +23,6 @@
     z-index: 10;
   }
 
-  .mini-yt {
-    position: fixed;
-    top: 10px;
-    right: 10px;
-    width: 180px;
-    aspect-ratio: 16 / 9;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.15);
-    z-index: 50;
-  }
-
-  .mini-yt iframe {
-    width: 100%;
-    height: 100%;
-    display: block;
-    border: 0;
-  }
-
-  @media (max-width: 480px) {
-    .mini-yt {
-      width: 130px;
-    }
-  }
-
   header h1 {
     font-size: 20px;
     font-weight: 700;
@@ -55,7 +30,7 @@
 
   .header-logo {
     display: block;
-    height: 48px;
+    height: 64px;
     width: auto;
   }
 
@@ -350,6 +325,39 @@
     gap: 10px;
   }
 
+  .pager {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    margin-top: 14px;
+    font-size: 13px;
+    color: #666;
+  }
+
+  .pager-btn {
+    border: none;
+    background: #f5f5f5;
+    color: #333;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .pager-btn:hover:not(:disabled) {
+    background: #eee;
+  }
+
+  .pager-btn:disabled {
+    opacity: 0.3;
+    cursor: default;
+  }
+
   .setlist-item {
     background: #fff;
     border: 1px solid #eee;
@@ -421,41 +429,7 @@
   </nav>
 </header>
 
-<div class="mini-yt">
-  <iframe
-    src="https://www.youtube.com/embed/Sx_8sO8Tm_M?si=6-RXaEOlPKB6805c&autoplay=1&playsinline=1"
-    title="YouTube video player"
-    frameborder="0"
-    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-    referrerpolicy="strict-origin-when-cross-origin"
-    allowfullscreen>
-  </iframe>
-</div>
-
 <main>
-
-  <section id="sns">
-    <div class="icon-row">
-      <a href="https://www.instagram.com/owalloil_official/" target="_blank" rel="noopener" aria-label="인스타그램">
-        <img src="https://www.google.com/s2/favicons?domain=instagram.com&sz=64" alt="인스타그램">
-      </a>
-      <a href="https://www.youtube.com/@OWALLOIL" target="_blank" rel="noopener" aria-label="유튜브">
-        <img src="https://www.google.com/s2/favicons?domain=youtube.com&sz=64" alt="유튜브">
-      </a>
-      <a href="https://music.youtube.com/channel/UCp-MnUXH3vPP0uh8s4-rxQQ" target="_blank" rel="noopener" aria-label="유튜브뮤직">
-        <img src="https://www.google.com/s2/favicons?domain=music.youtube.com&sz=64" alt="유튜브뮤직">
-      </a>
-      <a href="https://music.apple.com/kr/artist/오월오일/1587319780" target="_blank" rel="noopener" aria-label="애플뮤직">
-        <img src="https://www.google.com/s2/favicons?domain=music.apple.com&sz=64" alt="애플뮤직">
-      </a>
-      <a href="https://www.melon.com/artist/song.htm?artistId=2743985" target="_blank" rel="noopener" aria-label="멜론">
-        <img src="https://www.google.com/s2/favicons?domain=melon.com&sz=64" alt="멜론">
-      </a>
-      <a href="https://open.spotify.com/artist/59THIwTnvgT7SeGFzocky2" target="_blank" rel="noopener" aria-label="스포티파이">
-        <img src="https://www.google.com/s2/favicons?domain=spotify.com&sz=64" alt="스포티파이">
-      </a>
-    </div>
-  </section>
 
   <section id="calendar">
     <h2>캘린더</h2>
@@ -475,15 +449,40 @@
   </section>
 
   <section id="schedule">
-    <h2>일정 요약</h2>
+    <h2>다가오는 일정</h2>
     <ul class="schedule-list" id="schedule-list">
       <li class="schedule-loading">일정을 불러오는 중...</li>
     </ul>
+    <div class="pager" id="schedule-pager" style="display:none;"></div>
   </section>
 
   <section id="setlist">
     <h2>Setlist</h2>
     <div class="setlist-container" id="setlist-container"></div>
+    <div class="pager" id="setlist-pager" style="display:none;"></div>
+  </section>
+
+  <section id="sns">
+    <div class="icon-row">
+      <a href="https://www.instagram.com/owalloil_official/" target="_blank" rel="noopener" aria-label="인스타그램">
+        <img src="https://cdn.simpleicons.org/instagram" alt="인스타그램" width="32" height="32">
+      </a>
+      <a href="https://www.youtube.com/@OWALLOIL" target="_blank" rel="noopener" aria-label="유튜브">
+        <img src="https://cdn.simpleicons.org/youtube" alt="유튜브" width="32" height="32">
+      </a>
+      <a href="https://music.youtube.com/channel/UCp-MnUXH3vPP0uh8s4-rxQQ" target="_blank" rel="noopener" aria-label="유튜브뮤직">
+        <img src="https://cdn.simpleicons.org/youtubemusic" alt="유튜브뮤직" width="32" height="32">
+      </a>
+      <a href="https://music.apple.com/kr/artist/오월오일/1587319780" target="_blank" rel="noopener" aria-label="애플뮤직">
+        <img src="https://cdn.simpleicons.org/applemusic" alt="애플뮤직" width="32" height="32">
+      </a>
+      <a href="https://www.melon.com/artist/song.htm?artistId=2743985" target="_blank" rel="noopener" aria-label="멜론">
+        <img src="https://www.google.com/s2/favicons?domain=melon.com&sz=128" alt="멜론" width="32" height="32">
+      </a>
+      <a href="https://open.spotify.com/artist/59THIwTnvgT7SeGFzocky2" target="_blank" rel="noopener" aria-label="스포티파이">
+        <img src="https://cdn.simpleicons.org/spotify" alt="스포티파이" width="32" height="32">
+      </a>
+    </div>
   </section>
 
 </main>
@@ -496,30 +495,44 @@
   const GOOGLE_API_KEY = 'AIzaSyCizEquK5yjfW7yRGogF0_yRvOgmQRNrKw';
   const CALENDAR_ID = 'nunguleum093@gmail.com';
 
+  const SCHEDULE_PAGE_SIZE = 5;
+  let scheduleEvents = [];
+  let schedulePage = 1;
+
   async function loadSchedule() {
     const listEl = document.getElementById('schedule-list');
     const now = new Date().toISOString();
     const url = `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(CALENDAR_ID)}/events`
-      + `?key=${GOOGLE_API_KEY}&timeMin=${encodeURIComponent(now)}&singleEvents=true&orderBy=startTime&maxResults=10`;
+      + `?key=${GOOGLE_API_KEY}&timeMin=${encodeURIComponent(now)}&singleEvents=true&orderBy=startTime&maxResults=50`;
 
     try {
       const res = await fetch(url);
       if (!res.ok) throw new Error('요청 실패: ' + res.status);
       const data = await res.json();
-      renderSchedule(listEl, data.items || []);
+      scheduleEvents = data.items || [];
+      schedulePage = 1;
+      renderSchedulePage();
     } catch (err) {
       console.error(err);
       listEl.innerHTML = '<li class="schedule-empty">일정을 불러오지 못했습니다. API 키/캘린더 설정을 확인해주세요.</li>';
     }
   }
 
-  function renderSchedule(listEl, events) {
-    if (events.length === 0) {
+  function renderSchedulePage() {
+    const listEl = document.getElementById('schedule-list');
+    const pagerEl = document.getElementById('schedule-pager');
+
+    if (scheduleEvents.length === 0) {
       listEl.innerHTML = '<li class="schedule-empty">다가오는 일정이 없습니다.</li>';
+      pagerEl.style.display = 'none';
       return;
     }
 
-    listEl.innerHTML = events.map(function (ev) {
+    const totalPages = Math.ceil(scheduleEvents.length / SCHEDULE_PAGE_SIZE);
+    const start = (schedulePage - 1) * SCHEDULE_PAGE_SIZE;
+    const pageEvents = scheduleEvents.slice(start, start + SCHEDULE_PAGE_SIZE);
+
+    listEl.innerHTML = pageEvents.map(function (ev) {
       const rawStart = ev.start.dateTime || ev.start.date;
       const startDate = new Date(rawStart);
       const dateLabel = (startDate.getMonth() + 1) + '.' + startDate.getDate();
@@ -536,6 +549,23 @@
         + '</div>'
         + '</li>';
     }).join('');
+
+    if (totalPages <= 1) {
+      pagerEl.style.display = 'none';
+      return;
+    }
+
+    pagerEl.style.display = 'flex';
+    pagerEl.innerHTML = '<button class="pager-btn" id="schedule-prev"' + (schedulePage === 1 ? ' disabled' : '') + '>‹</button>'
+      + '<span>' + schedulePage + ' / ' + totalPages + '</span>'
+      + '<button class="pager-btn" id="schedule-next"' + (schedulePage === totalPages ? ' disabled' : '') + '>›</button>';
+
+    document.getElementById('schedule-prev').addEventListener('click', function () {
+      if (schedulePage > 1) { schedulePage -= 1; renderSchedulePage(); }
+    });
+    document.getElementById('schedule-next').addEventListener('click', function () {
+      if (schedulePage < totalPages) { schedulePage += 1; renderSchedulePage(); }
+    });
   }
 
   function escapeHtml(str) {
@@ -691,11 +721,18 @@
     { date: '26.06.24', title: 'Super! 창원 수요콘서트', songs: ['harvest day','Look my moon','SSY','Magic train','in the forest','echo','epilogue','이에르','scentria forest','나를 싫어했던 사람들에게','She said','Last dance','Merry go round','I dare you','Wish','Lunchtime','London Time','creaminal','Rooftop','leaves','Cherry roman candle'] }
   ];
 
+  const SETLIST_PAGE_SIZE = 5;
+  let setlistPage = 1;
+  const SETLISTS_SORTED = SETLISTS.slice().reverse();
+
   function renderSetlists() {
     const containerEl = document.getElementById('setlist-container');
-    const sorted = SETLISTS.slice().reverse();
+    const pagerEl = document.getElementById('setlist-pager');
+    const totalPages = Math.ceil(SETLISTS_SORTED.length / SETLIST_PAGE_SIZE);
+    const start = (setlistPage - 1) * SETLIST_PAGE_SIZE;
+    const pageShows = SETLISTS_SORTED.slice(start, start + SETLIST_PAGE_SIZE);
 
-    containerEl.innerHTML = sorted.map(function (show) {
+    containerEl.innerHTML = pageShows.map(function (show) {
       const songsHtml = show.songs.map(function (song) {
         return '<li>' + escapeHtml(song) + '</li>';
       }).join('');
@@ -705,6 +742,23 @@
         + '<ol class="setlist-songs">' + songsHtml + '</ol>'
         + '</details>';
     }).join('');
+
+    if (totalPages <= 1) {
+      pagerEl.style.display = 'none';
+      return;
+    }
+
+    pagerEl.style.display = 'flex';
+    pagerEl.innerHTML = '<button class="pager-btn" id="setlist-prev"' + (setlistPage === 1 ? ' disabled' : '') + '>‹</button>'
+      + '<span>' + setlistPage + ' / ' + totalPages + '</span>'
+      + '<button class="pager-btn" id="setlist-next"' + (setlistPage === totalPages ? ' disabled' : '') + '>›</button>';
+
+    document.getElementById('setlist-prev').addEventListener('click', function () {
+      if (setlistPage > 1) { setlistPage -= 1; renderSetlists(); }
+    });
+    document.getElementById('setlist-next').addEventListener('click', function () {
+      if (setlistPage < totalPages) { setlistPage += 1; renderSetlists(); }
+    });
   }
 
   document.addEventListener('DOMContentLoaded', renderSetlists);
